@@ -19,4 +19,6 @@ public class Pengguna {
     private String peran; // admin, dosen, mahasiswa
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String nip;   
+    private String npm;  
 }

@@ -1,7 +1,11 @@
 package com.example.tubesrpl.service;
 
 import com.example.tubesrpl.exception.ResourceNotFoundException;
+import com.example.tubesrpl.model.Dosen;
+import com.example.tubesrpl.model.Mahasiswa;
 import com.example.tubesrpl.model.Pengguna;
+import com.example.tubesrpl.repository.DosenRepository;
+import com.example.tubesrpl.repository.MahasiswaRepository;
 import com.example.tubesrpl.repository.PenggunaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,6 +19,8 @@ import java.util.Optional;
 public class PenggunaService {
 
     private final PenggunaRepository penggunaRepository;
+    private final DosenRepository dosenRepository;
+    private final MahasiswaRepository mahasiswaRepository;
     private final PasswordEncoder passwordEncoder;
 
     public List<Pengguna> findAll() {
@@ -60,7 +66,30 @@ public class PenggunaService {
             !pengguna.getPassword().startsWith("$2b$")) {
             pengguna.setPassword(passwordEncoder.encode(pengguna.getPassword()));
         }
-        return penggunaRepository.save(pengguna);
+        Pengguna saved = penggunaRepository.save(pengguna);
+
+        if (saved.getIdPengguna() != null && pengguna.getIdPengguna() == null) {
+            if ("dosen".equals(saved.getPeran())) {
+                if (pengguna.getNip() == null || pengguna.getNip().isEmpty()) {
+                    throw new IllegalArgumentException("NIP wajib diisi untuk dosen");
+                }
+                Dosen dosen = Dosen.builder()
+                        .nip(pengguna.getNip())
+                        .idPengguna(saved.getIdPengguna())
+                        .build();
+                dosenRepository.save(dosen);
+            }  else if ("mahasiswa".equals(saved.getPeran())) {
+                if (pengguna.getNpm() == null || pengguna.getNpm().isEmpty()) {
+                    throw new IllegalArgumentException("NPM wajib diisi untuk mahasiswa");
+                }
+                Mahasiswa mahasiswa = Mahasiswa.builder()
+                        .npm(pengguna.getNpm())
+                        .idPengguna(saved.getIdPengguna())
+                        .build();
+                mahasiswaRepository.save(mahasiswa);
+            }
+        }
+        return saved;
     }
 
     public void deleteById(Integer id) {
