@@ -1,65 +1,70 @@
 package com.example.tubesrpl.repository;
 
 import com.example.tubesrpl.model.MataKuliah;
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
+@RequiredArgsConstructor
 public class MataKuliahRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public MataKuliahRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    private final RowMapper<MataKuliah> rowMapper = (rs, rowNum) -> MataKuliah.builder()
+            .idMatkul(rs.getInt("id_matkul"))
+            .kodeMatkul(rs.getString("kode_matkul"))
+            .namaMatkul(rs.getString("nama_matkul"))
+            .sks(rs.getInt("sks"))
+            .build();
 
-    // Ambil semua mata kuliah
     public List<MataKuliah> findAll() {
-        String sql = "SELECT id_matkul, kode_matkul, nama_matkul, sks FROM mata_kuliah";
-        return jdbcTemplate.query(sql, this::mapRowToMataKuliah);
+        return jdbcTemplate.query("SELECT * FROM mata_kuliah ORDER BY id_matkul", rowMapper);
     }
 
-    // Cari mata kuliah berdasarkan ID
-    public MataKuliah findById(Long idMatkul) {
-        String sql = "SELECT id_matkul, kode_matkul, nama_matkul, sks FROM mata_kuliah WHERE id_matkul = ?";
-        return jdbcTemplate.queryForObject(sql, this::mapRowToMataKuliah, idMatkul);
+    public Optional<MataKuliah> findById(Integer id) {
+        List<MataKuliah> results = jdbcTemplate.query(
+                "SELECT * FROM mata_kuliah WHERE id_matkul = ?", rowMapper, id);
+        return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
     }
 
-    // Validasi kode mata kuliah unik
-    public boolean existsByKodeMatkul(String kodeMatkul) {
-        String sql = "SELECT 1 FROM mata_kuliah WHERE kode_matkul = ?";
-        return !jdbcTemplate.queryForList(sql, Integer.class, kodeMatkul).isEmpty();
+    public Optional<MataKuliah> findByKode(String kodeMatkul) {
+        List<MataKuliah> results = jdbcTemplate.query(
+                "SELECT * FROM mata_kuliah WHERE kode_matkul = ?", rowMapper, kodeMatkul);
+        return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
     }
 
-    // Simpan mata kuliah baru
-    public void save(String kodeMatkul, String namaMatkul, Integer sks) {
-        String sql = "INSERT INTO mata_kuliah (kode_matkul, nama_matkul, sks) VALUES (?, ?, ?)";
-        jdbcTemplate.update(sql, kodeMatkul, namaMatkul, sks != null ? sks : 3); // default sks=3
+    public MataKuliah save(MataKuliah mataKuliah) {
+        if (mataKuliah.getIdMatkul() == null) {
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(
+                        "INSERT INTO mata_kuliah (kode_matkul, nama_matkul, sks) VALUES (?, ?, ?)",
+                        Statement.RETURN_GENERATED_KEYS);
+                ps.setString(1, mataKuliah.getKodeMatkul());
+                ps.setString(2, mataKuliah.getNamaMatkul());
+                ps.setInt(3, mataKuliah.getSks());
+                return ps;
+            }, keyHolder);
+            Number key = (Number) keyHolder.getKeys().get("id_matkul");
+            mataKuliah.setIdMatkul(key.intValue());
+        } else {
+            jdbcTemplate.update(
+                    "UPDATE mata_kuliah SET kode_matkul = ?, nama_matkul = ?, sks = ? WHERE id_matkul = ?",
+                    mataKuliah.getKodeMatkul(), mataKuliah.getNamaMatkul(), mataKuliah.getSks(), mataKuliah.getIdMatkul());
+        }
+        return mataKuliah;
     }
 
-    // Update mata kuliah
-    public void update(Long idMatkul, String kodeMatkul, String namaMatkul, Integer sks) {
-        String sql = "UPDATE mata_kuliah SET kode_matkul = ?, nama_matkul = ?, sks = ? WHERE id_matkul = ?";
-        jdbcTemplate.update(sql, kodeMatkul, namaMatkul, sks != null ? sks : 3, idMatkul);
-    }
-
-    // Hapus mata kuliah
-    public void deleteById(Long idMatkul) {
-        String sql = "DELETE FROM mata_kuliah WHERE id_matkul = ?";
-        jdbcTemplate.update(sql, idMatkul);
-    }
-
-    // Mapping ResultSet ke objek MataKuliah
-    private MataKuliah mapRowToMataKuliah(ResultSet rs, int rowNum) throws SQLException {
-        MataKuliah mk = new MataKuliah();
-        mk.setIdMatkul(rs.getLong("id_matkul"));
-        mk.setKodeMatkul(rs.getString("kode_matkul"));
-        mk.setNamaMatkul(rs.getString("nama_matkul"));
-        mk.setSks(rs.getInt("sks"));
-        return mk;
+    public void deleteById(Integer id) {
+        jdbcTemplate.update("DELETE FROM mata_kuliah WHERE id_matkul = ?", id);
     }
 }

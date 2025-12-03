@@ -1,34 +1,18 @@
 <!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelas - Detail</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * { font-family: 'Inter', sans-serif; }
-    </style>
-</head>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Detail Kelas')}"></head>
 <body class="bg-gray-100 min-h-screen">
-    <!-- Header -->
+    <!-- Replaced th:replace with inline header -->
     <header class="bg-sky-400 text-white px-6 py-4 flex items-center justify-between fixed top-0 left-0 right-0 z-40">
         <div class="flex items-center gap-4">
-            <a href="kelas.html" class="p-2 hover:bg-sky-500 rounded-lg transition-colors">
+            <a th:href="@{/dosen/kelas}" class="p-2 hover:bg-sky-500 rounded-lg transition-colors">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                 </svg>
             </a>
-            <h1 class="text-xl font-semibold tracking-wide">Kelas</h1>
+            <h1 class="text-xl font-semibold tracking-wide" th:text="${mataKuliah.namaMatkul}">Mata Kuliah</h1>
         </div>
         <div class="flex items-center gap-4">
-            <button class="p-2 hover:bg-sky-500 rounded-full transition-colors">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-                </svg>
-            </button>
             <div class="w-10 h-10 bg-white rounded-full overflow-hidden">
                 <img src="/placeholder.svg?height=40&width=40" alt="Profile" class="w-full h-full object-cover">
             </div>
@@ -37,42 +21,26 @@
 
     <!-- Main Content -->
     <main class="pt-20 px-6 pb-8">
-        <p class="text-lg font-semibold text-gray-800 mb-6">Total Kelas : 3</p>
+        <p class="text-lg font-semibold text-gray-800 mb-6">Total Kelas : <span th:text="${#lists.size(kelasList)}">0</span></p>
         
         <div class="flex flex-wrap gap-6">
             <!-- Class Cards -->
-            <a href="kelas-tugas.html?class=A" class="bg-sky-400 rounded-3xl p-6 text-white text-center hover:bg-sky-500 transition-colors cursor-pointer w-40">
+            <a th:each="kelas : ${kelasList}" 
+               th:href="@{/dosen/kelas/{id}/tugas(id=${kelas.idKelas})}" 
+               class="bg-sky-400 rounded-3xl p-6 text-white text-center hover:bg-sky-500 transition-colors cursor-pointer w-40">
                 <div class="flex items-center justify-between mb-4">
-                    <span class="text-4xl font-bold">A</span>
+                    <span class="text-4xl font-bold" th:text="${kelas.namaKelas}">A</span>
                     <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                     </svg>
                 </div>
-                <p class="text-sm font-medium">Rekayasa</p>
-                <p class="text-sm font-medium">Perangkat Lunak</p>
+                <p class="text-sm font-medium" th:text="${mataKuliah.namaMatkul}">Mata Kuliah</p>
             </a>
-
-            <a href="kelas-tugas.html?class=B" class="bg-sky-400 rounded-3xl p-6 text-white text-center hover:bg-sky-500 transition-colors cursor-pointer w-40">
-                <div class="flex items-center justify-between mb-4">
-                    <span class="text-4xl font-bold">B</span>
-                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                    </svg>
-                </div>
-                <p class="text-sm font-medium">Rekayasa</p>
-                <p class="text-sm font-medium">Perangkat Lunak</p>
-            </a>
-
-            <a href="kelas-tugas.html?class=C" class="bg-sky-400 rounded-3xl p-6 text-white text-center hover:bg-sky-500 transition-colors cursor-pointer w-40">
-                <div class="flex items-center justify-between mb-4">
-                    <span class="text-4xl font-bold">C</span>
-                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                    </svg>
-                </div>
-                <p class="text-sm font-medium">Rekayasa</p>
-                <p class="text-sm font-medium">Perangkat Lunak</p>
-            </a>
+            
+            <!-- Empty state -->
+            <div th:if="${#lists.isEmpty(kelasList)}" class="w-full text-center py-12">
+                <p class="text-gray-500">Belum ada kelas untuk mata kuliah ini</p>
+            </div>
         </div>
     </main>
 </body>
