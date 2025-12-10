@@ -12,7 +12,7 @@
         * { font-family: 'Inter', sans-serif; }
         .login-bg {
             background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), 
-                        url('https://unpar.ac.id/wp-content/uploads/2024/09/CHIPS-2024-Kompetisi-Informatika-UNPAR.jpg');
+                        url([[@{/img/CHIPS-2024-Kompetisi-Informatika-UNPAR.jpg}]]);
             background-size: cover;
             background-position: center;
         }
@@ -24,9 +24,7 @@
         <div class="flex items-center gap-3">
             <div class="flex items-center gap-2">
                 <div class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center">
-                    <svg class="w-6 h-6 text-green-700" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                    </svg>
+                    <img th:src="@{/img/logo_unpar.jpg}" alt="Logo UNPAR" class="w-10 h-10 rounded-full object-cover">
                 </div>
                 <div class="text-xs leading-tight">
                     <div class="font-bold text-gray-800">UNIVERSITAS KATOLIK PARAHYANGAN</div>
@@ -36,8 +34,8 @@
         </div>
         <div class="flex items-center gap-2">
             <div class="flex items-center gap-2 border-l pl-3">
-                <div class="w-8 h-8 bg-sky-500 rounded flex items-center justify-center">
-                    <span class="text-white font-bold text-xs">IF</span>
+                <div class="w-8 h-8 flex items-center justify-center">
+                    <img th:src="@{/img/logo_if.png}" alt="Logo IF" class="w-10 h-10">
                 </div>
                 <div class="text-xs leading-tight">
                     <div class="font-bold text-sky-600">INFORMATIKA</div>
